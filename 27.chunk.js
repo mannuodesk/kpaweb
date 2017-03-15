@@ -1,152 +1,99 @@
-webpackJsonpac__name_([25],{
+webpackJsonpac__name_([27],{
 
-/***/ "./node_modules/angular2-localstorage/LocalStorageEmitter.ts":
+/***/ "./src/app/challengesByProject/project-challenges.component.ts":
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
 "use strict";
 var core_1 = __webpack_require__("./node_modules/@angular/core/index.js");
-var core_2 = __webpack_require__("./node_modules/@angular/core/index.js");
-var LocalStorageEmitter = (function () {
-    function LocalStorageEmitter() {
-    }
-    LocalStorageEmitter.register = function (ngZone) {
-        var index = LocalStorageEmitter.ngZones.indexOf(ngZone);
-        if (index === -1) {
-            index = LocalStorageEmitter.ngZones.push(ngZone) - 1;
-        }
-        LocalStorageEmitter.subscribed[index] = ngZone.onMicrotaskEmpty.subscribe(function () {
-            for (var _i = 0, _a = LocalStorageEmitter.subscribers; _i < _a.length; _i++) {
-                var callback = _a[_i];
-                callback();
-            }
+var ChallengeService_1 = __webpack_require__("./src/app/services/ChallengeService.ts");
+__webpack_require__("./node_modules/rxjs/add/operator/map.js");
+var http_1 = __webpack_require__("./node_modules/@angular/http/index.js");
+var router_1 = __webpack_require__("./node_modules/@angular/router/index.js");
+var ProjectChallenges = (function () {
+    function ProjectChallenges(challengeservice, http, activatedRoute) {
+        var _this = this;
+        this.challengeservice = challengeservice;
+        this.http = http;
+        this.activatedRoute = activatedRoute;
+        this.challengelist = [];
+        this.userObject = JSON.parse(sessionStorage.getItem('userObject'));
+        this.activatedRoute.queryParams.subscribe(function (params) {
+            _this.projectID = params['projectId'];
         });
-    };
-    LocalStorageEmitter.subscribe = function (callback) {
-        LocalStorageEmitter.subscribers.push(callback);
-    };
-    LocalStorageEmitter.unregister = function (ngZone) {
-        var index = LocalStorageEmitter.ngZones.indexOf(ngZone);
-        if (index >= 0) {
-            LocalStorageEmitter.subscribed[index].unsubscribe();
-        }
-    };
-    LocalStorageEmitter.subscribed = [];
-    LocalStorageEmitter.ngZones = [];
-    LocalStorageEmitter.subscribers = [];
-    return LocalStorageEmitter;
-}());
-exports.LocalStorageEmitter = LocalStorageEmitter;
-var LocalStorageService = (function () {
-    function LocalStorageService(ngZone) {
-        this.ngZone = ngZone;
-        LocalStorageEmitter.register(this.ngZone);
+        this.challengeservice.getAllChallenges(this.projectID, sessionStorage.getItem('token')).subscribe(function (a) {
+            _this.challengelist = a.data;
+            //this.noOfChallenges = this.challengelist.length;
+        });
     }
-    LocalStorageService.prototype.ngOnDestroy = function () {
-        LocalStorageEmitter.unregister(this.ngZone);
-    };
-    LocalStorageService = __decorate([
-        core_1.Injectable(), 
-        __metadata('design:paramtypes', [(typeof (_a = typeof core_2.NgZone !== 'undefined' && core_2.NgZone) === 'function' && _a) || Object])
-    ], LocalStorageService);
-    return LocalStorageService;
-    var _a;
+    ProjectChallenges = __decorate([
+        core_1.Component({
+            selector: '[project-challenges]',
+            template: __webpack_require__("./src/app/challengesByProject/project-challenges.template.html"),
+            encapsulation: core_1.ViewEncapsulation.None,
+            providers: [ChallengeService_1.ChallengeService],
+            styles: [__webpack_require__("./src/app/challengesByProject/project-challenges.style.scss"), __webpack_require__("./src/app/projectdashboard/set1.css"), __webpack_require__("./src/app/projectdashboard/set2.css"), __webpack_require__("./src/app/projectdashboard/normalize.css")]
+        }), 
+        __metadata('design:paramtypes', [(typeof (_a = typeof ChallengeService_1.ChallengeService !== 'undefined' && ChallengeService_1.ChallengeService) === 'function' && _a) || Object, (typeof (_b = typeof http_1.Http !== 'undefined' && http_1.Http) === 'function' && _b) || Object, (typeof (_c = typeof router_1.ActivatedRoute !== 'undefined' && router_1.ActivatedRoute) === 'function' && _c) || Object])
+    ], ProjectChallenges);
+    return ProjectChallenges;
+    var _a, _b, _c;
 }());
-exports.LocalStorageService = LocalStorageService;
-function LocalStorageSubscriber(appPromise) {
-    appPromise.then(function (bla) {
-        bla.injector.get(LocalStorageService);
-    });
-}
-exports.LocalStorageSubscriber = LocalStorageSubscriber;
+exports.ProjectChallenges = ProjectChallenges;
 
 
 /***/ },
 
-/***/ "./node_modules/angular2-localstorage/WebStorage.ts":
+/***/ "./src/app/challengesByProject/project-challenges.module.ts":
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
 "use strict";
-var LocalStorageEmitter_1 = __webpack_require__("./node_modules/angular2-localstorage/LocalStorageEmitter.ts");
-function LocalStorage(storageKey) {
-    return WebStorage(storageKey, localStorage);
-}
-exports.LocalStorage = LocalStorage;
-function SessionStorage(storageKey) {
-    return WebStorage(storageKey, sessionStorage);
-}
-exports.SessionStorage = SessionStorage;
-function WebStorage(storageKey, webStorage) {
-    return function (target, decoratedPropertyName) {
-        if (!webStorage) {
-            return;
-        }
-        if (!storageKey) {
-            storageKey = "" + "/" + decoratedPropertyName;
-        }
-        Object.defineProperty(target, "_" + decoratedPropertyName + "_mapped", {
-            enumerable: false,
-            configurable: true,
-            writable: true,
-            value: false
-        });
-        var instances = [];
-        var values = {};
-        var storageValue = webStorage.getItem(storageKey) || null;
-        var storageValueJSON = storageValue;
-        if ("string" === typeof storageValue) {
-            try {
-                storageValue = JSON.parse(storageValue);
-            }
-            catch (e) {
-                storageValue = null;
-                storageValueJSON = "null";
-            }
-        }
-        var oldJSONValues = {};
-        Object.defineProperty(target, decoratedPropertyName, {
-            get: function () {
-                if (false === this["_" + decoratedPropertyName + "_mapped"]) {
-                    this["_" + decoratedPropertyName + "_mapped"] = instances.length;
-                    // first registration triggers a setting to localStorage value
-                    values[instances.length] = storageValue;
-                    oldJSONValues[instances.length] = storageValueJSON;
-                    instances.push(this);
-                }
-                return values[this["_" + decoratedPropertyName + "_mapped"]];
-            },
-            set: function (newValue) {
-                if (false === this["_" + decoratedPropertyName + "_mapped"]) {
-                    this["_" + decoratedPropertyName + "_mapped"] = instances.length;
-                    // first registration triggers a setting to localStorage value
-                    values[instances.length] = storageValue;
-                    oldJSONValues[instances.length] = storageValueJSON;
-                    instances.push(this);
-                    // first "set" call is ignored if we have already a value from the localStorage
-                    if (storageValue) {
-                        return;
-                    }
-                }
-                values[this["_" + decoratedPropertyName + "_mapped"]] = newValue;
-            },
-            enumerable: true,
-            configurable: true
-        });
-        LocalStorageEmitter_1.LocalStorageEmitter.subscribe(function () {
-            for (var _i = 0, instances_1 = instances; _i < instances_1.length; _i++) {
-                var instance = instances_1[_i];
-                var currentValue = JSON.stringify(instance[decoratedPropertyName]);
-                var oldJSONValue = oldJSONValues[instance["_" + decoratedPropertyName + "_mapped"]];
-                if (currentValue !== oldJSONValue) {
-                    oldJSONValues[instance["_" + decoratedPropertyName + "_mapped"]] = currentValue;
-                    webStorage.setItem(storageKey, currentValue);
-                }
-            }
-        });
-    };
-}
+var common_1 = __webpack_require__("./node_modules/@angular/common/index.js");
+var forms_1 = __webpack_require__("./node_modules/@angular/forms/index.js");
+var core_1 = __webpack_require__("./node_modules/@angular/core/index.js");
+var router_1 = __webpack_require__("./node_modules/@angular/router/index.js");
+var project_challenges_component_1 = __webpack_require__("./src/app/challengesByProject/project-challenges.component.ts");
+exports.routes = [
+    { path: '', component: project_challenges_component_1.ProjectChallenges, pathMatch: 'full' }
+];
+var ProjectChallengesModule = (function () {
+    function ProjectChallengesModule() {
+    }
+    ProjectChallengesModule.routes = exports.routes;
+    ProjectChallengesModule = __decorate([
+        core_1.NgModule({
+            declarations: [
+                // Components / Directives/ Pipes
+                project_challenges_component_1.ProjectChallenges
+            ],
+            imports: [
+                common_1.CommonModule,
+                forms_1.FormsModule,
+                router_1.RouterModule.forChild(exports.routes),
+            ]
+        }), 
+        __metadata('design:paramtypes', [])
+    ], ProjectChallengesModule);
+    return ProjectChallengesModule;
+}());
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.default = ProjectChallengesModule;
 
+
+/***/ },
+
+/***/ "./src/app/challengesByProject/project-challenges.style.scss":
+/***/ function(module, exports) {
+
+module.exports = "/***********************************/\n/**          Post Links           **/\n/***********************************/\n.post-links {\n  margin-bottom: 0;\n  font-size: 0.875rem;\n  padding-left: 0; }\n  .post-links::after {\n    content: \"\";\n    display: table;\n    clear: both; }\n  .post-links > li {\n    float: left;\n    list-style: none; }\n    .post-links > li + li:before {\n      color: #999;\n      content: \"\\25cf\";\n      padding: 0 8px; }\n    .post-links > li > a {\n      text-decoration: none;\n      color: #999999; }\n      .post-links > li > a:hover {\n        color: #999999; }\n  .post-links.no-separator > li + li {\n    margin-left: 12px; }\n    .post-links.no-separator > li + li:before {\n      content: normal; }\n\n/***********************************/\n/**          Post Comments           **/\n/***********************************/\n.post-comments {\n  font-size: 0.875rem;\n  padding-left: 0; }\n  .post-comments::after {\n    content: \"\";\n    display: table;\n    clear: both; }\n  .post-links + .post-comments {\n    margin-top: 0.5rem; }\n  .post-comments > li {\n    padding: 10px;\n    border-top: 1px solid #e7e7e7;\n    list-style: none; }\n    .post-comments > li::after {\n      content: \"\";\n      display: table;\n      clear: both; }\n    .post-comments > li:last-child {\n      padding-bottom: 0; }\n  .post-comments p:last-child {\n    margin-bottom: 0; }\n  .post-comments .avatar {\n    margin-top: 1px; }\n  .post-comments .author {\n    margin-top: 0;\n    margin-bottom: 2px;\n    color: #7ca9dd; }\n  .post-comments .comment-body {\n    overflow: auto; }\n  .post-comments h6.author > small {\n    font-size: 11px; }\n  .widget > footer .post-comments {\n    margin-left: -20px;\n    margin-right: -20px; }\n\n/***********************************/\n/**           Post User           **/\n/***********************************/\n.post-user {\n  position: relative; }\n  .post-user::after {\n    content: \"\";\n    display: table;\n    clear: both; }\n  .post-user img {\n    border: 3px solid white; }\n\n/***********************************/\n/**           Profile             **/\n/***********************************/\n.user-profile .label {\n  padding: 5px; }\n\n.post-user-profile {\n  margin-top: -75px; }\n  .post-user-profile .contacts {\n    display: block;\n    margin-top: 25px;\n    margin-left: -10px;\n    margin-right: -10px;\n    padding-left: 0;\n    text-align: center; }\n    .post-user-profile .contacts > li {\n      display: inline-block;\n      line-height: 2.2;\n      list-style: none;\n      text-align: left;\n      margin: 0 10px; }\n      @media (min-width: 992px) {\n        .post-user-profile .contacts > li {\n          width: 150px;\n          white-space: nowrap; } }\n      .post-user-profile .contacts > li > a {\n        color: #a2a2a2;\n        text-decoration: none; }\n        .post-user-profile .contacts > li > a:hover, .post-user-profile .contacts > li > a:focus {\n          color: #555555; }\n    .post-user-profile .contacts .fa {\n      font-size: 1.25rem;\n      vertical-align: middle; }\n\n.stats-row-profile .stat-item {\n  border-left: 0;\n  padding-left: 15px;\n  text-align: center; }\n  @media (min-width: 992px) {\n    .stats-row-profile .stat-item {\n      padding-right: 0; } }\n  .stats-row-profile .stat-item .value {\n    font-size: 28px;\n    font-weight: 300; }\n\n.activities h3 {\n  margin-left: 20px; }\n\n.activities .event {\n  margin-top: 1rem;\n  width: 100%; }\n\n.event {\n  background: #fff;\n  border-radius: 0.25rem;\n  padding: 20px 20px 0;\n  position: relative; }\n  .event .post-comments {\n    margin-left: -20px;\n    margin-right: -20px; }\n  .event > footer {\n    margin: 20px -20px 0;\n    padding: 10px 20px;\n    border-bottom-left-radius: 0.25rem;\n    border-bottom-right-radius: 0.25rem;\n    background-color: #f3f3f3; }\n    .event > footer::after {\n      content: \"\";\n      display: table;\n      clear: both; }\n    .event > footer .thumb {\n      margin-left: 10px; }\n\n.event-heading {\n  margin: 0 0 2px;\n  font-weight: 600; }\n  .event-heading > a {\n    text-decoration: none;\n    color: #7ca9dd; }\n  .event-heading > small {\n    font-weight: 600; }\n    .event-heading > small > a {\n      text-decoration: none;\n      color: #999999; }\n\n.event-map {\n  display: block;\n  height: 200px;\n  margin: 0 -20px -20px;\n  overflow: visible !important; }\n\n.event-image {\n  margin: 0 -20px -20px;\n  max-height: 260px;\n  overflow: hidden; }\n  .event-image > img {\n    max-width: 100%; }\n"
+
+/***/ },
+
+/***/ "./src/app/challengesByProject/project-challenges.template.html":
+/***/ function(module, exports) {
+
+module.exports = "<!--<ol class=\"breadcrumb\">\r\n  <li class=\"breadcrumb-item\">YOU ARE HERE</li>\r\n  <li class=\"active breadcrumb-item\">Challenges By Project</li>\r\n</ol> -->\r\n<h1 class=\"page-title\">Challenges<span class=\"fw-semi-bold\"></span></h1>\r\n\r\n<div class=\"row\">\r\n\r\n<div  *ngFor=\"let challenges of challengelist\" class=\"col-md-4\">\r\n\r\n\r\n<div class=\"grid\">\r\n\t\t\t\t\t<figure class=\"effect-ming\">\r\n\t\t\t\t\t\t<img src=\"assets/img/people/10.jpg\" alt=\"img19\"/>\r\n\t\t\t\t\t\t<figcaption>\r\n\t\t\t\t\t\t\t<h2>{{challenges.challengeShortName}}</h2>\r\n\t\t\t\t\t\t\t<p style=\"text-transform:lowercase\">{{challenges.targetPoints}}.</p>\r\n\t\t\t\t\t\t\t<a href=\"#/app/ChallengesTasks?challengeId={{challenges._id}}\">View more</a>\r\n\t\t\t\t\t\t</figcaption>\t\t\t\r\n\t\t\t\t\t</figure>\r\n</div>\r\n\r\n\r\n</div>\r\n\r\n\r\n</div>"
 
 /***/ },
 
@@ -282,114 +229,7 @@ var ServiceUrl = (function () {
 exports.ServiceUrl = ServiceUrl;
 
 
-/***/ },
-
-/***/ "./src/app/tasksByChallenges/challenges-tasks.component.ts":
-/***/ function(module, exports, __webpack_require__) {
-
-"use strict";
-"use strict";
-var core_1 = __webpack_require__("./node_modules/@angular/core/index.js");
-var ChallengeService_1 = __webpack_require__("./src/app/services/ChallengeService.ts");
-__webpack_require__("./node_modules/rxjs/add/operator/map.js");
-var http_1 = __webpack_require__("./node_modules/@angular/http/index.js");
-var WebStorage_1 = __webpack_require__("./node_modules/angular2-localstorage/WebStorage.ts");
-var router_1 = __webpack_require__("./node_modules/@angular/router/index.js");
-var ChallengesTasks = (function () {
-    function ChallengesTasks(challengeservice, http, activatedRoute) {
-        var _this = this;
-        this.challengeservice = challengeservice;
-        this.http = http;
-        this.activatedRoute = activatedRoute;
-        this.taskslist = [];
-        this.activatedRoute.queryParams.subscribe(function (params) {
-            _this.challengeId = params['challengeId'];
-        });
-        /* this.challengeservice.getAllChallenges(this.challengeId,this.token).subscribe(
-                   a=> {
-                     this.taskslist = a.data;
-                     this.noOfTasks = this.taskslist.length;
-                   }
-               );  */
-    }
-    __decorate([
-        WebStorage_1.SessionStorage(), 
-        __metadata('design:type', Object)
-    ], ChallengesTasks.prototype, "userObject", void 0);
-    __decorate([
-        WebStorage_1.SessionStorage(), 
-        __metadata('design:type', String)
-    ], ChallengesTasks.prototype, "token", void 0);
-    ChallengesTasks = __decorate([
-        core_1.Component({
-            selector: '[challenges-tasks]',
-            template: __webpack_require__("./src/app/tasksByChallenges/challenges-tasks.template.html"),
-            encapsulation: core_1.ViewEncapsulation.None,
-            providers: [ChallengeService_1.ChallengeService],
-            styles: [__webpack_require__("./src/app/tasksByChallenges/challenges-tasks.style.scss"), __webpack_require__("./src/app/projectdashboard/set1.css"), __webpack_require__("./src/app/projectdashboard/set2.css"), __webpack_require__("./src/app/projectdashboard/normalize.css")]
-        }), 
-        __metadata('design:paramtypes', [(typeof (_a = typeof ChallengeService_1.ChallengeService !== 'undefined' && ChallengeService_1.ChallengeService) === 'function' && _a) || Object, (typeof (_b = typeof http_1.Http !== 'undefined' && http_1.Http) === 'function' && _b) || Object, (typeof (_c = typeof router_1.ActivatedRoute !== 'undefined' && router_1.ActivatedRoute) === 'function' && _c) || Object])
-    ], ChallengesTasks);
-    return ChallengesTasks;
-    var _a, _b, _c;
-}());
-exports.ChallengesTasks = ChallengesTasks;
-
-
-/***/ },
-
-/***/ "./src/app/tasksByChallenges/challenges-tasks.module.ts":
-/***/ function(module, exports, __webpack_require__) {
-
-"use strict";
-"use strict";
-var common_1 = __webpack_require__("./node_modules/@angular/common/index.js");
-var forms_1 = __webpack_require__("./node_modules/@angular/forms/index.js");
-var core_1 = __webpack_require__("./node_modules/@angular/core/index.js");
-var router_1 = __webpack_require__("./node_modules/@angular/router/index.js");
-var challenges_tasks_component_1 = __webpack_require__("./src/app/tasksByChallenges/challenges-tasks.component.ts");
-exports.routes = [
-    { path: '', component: challenges_tasks_component_1.ChallengesTasks, pathMatch: 'full' }
-];
-var ChallengesTasksModule = (function () {
-    function ChallengesTasksModule() {
-    }
-    ChallengesTasksModule.routes = exports.routes;
-    ChallengesTasksModule = __decorate([
-        core_1.NgModule({
-            declarations: [
-                // Components / Directives/ Pipes
-                challenges_tasks_component_1.ChallengesTasks
-            ],
-            imports: [
-                common_1.CommonModule,
-                forms_1.FormsModule,
-                router_1.RouterModule.forChild(exports.routes),
-            ]
-        }), 
-        __metadata('design:paramtypes', [])
-    ], ChallengesTasksModule);
-    return ChallengesTasksModule;
-}());
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = ChallengesTasksModule;
-
-
-/***/ },
-
-/***/ "./src/app/tasksByChallenges/challenges-tasks.style.scss":
-/***/ function(module, exports) {
-
-module.exports = "/***********************************/\n/**          Post Links           **/\n/***********************************/\n.post-links {\n  margin-bottom: 0;\n  font-size: 0.875rem;\n  padding-left: 0; }\n  .post-links::after {\n    content: \"\";\n    display: table;\n    clear: both; }\n  .post-links > li {\n    float: left;\n    list-style: none; }\n    .post-links > li + li:before {\n      color: #999;\n      content: \"\\25cf\";\n      padding: 0 8px; }\n    .post-links > li > a {\n      text-decoration: none;\n      color: #999999; }\n      .post-links > li > a:hover {\n        color: #999999; }\n  .post-links.no-separator > li + li {\n    margin-left: 12px; }\n    .post-links.no-separator > li + li:before {\n      content: normal; }\n\n/***********************************/\n/**          Post Comments           **/\n/***********************************/\n.post-comments {\n  font-size: 0.875rem;\n  padding-left: 0; }\n  .post-comments::after {\n    content: \"\";\n    display: table;\n    clear: both; }\n  .post-links + .post-comments {\n    margin-top: 0.5rem; }\n  .post-comments > li {\n    padding: 10px;\n    border-top: 1px solid #e7e7e7;\n    list-style: none; }\n    .post-comments > li::after {\n      content: \"\";\n      display: table;\n      clear: both; }\n    .post-comments > li:last-child {\n      padding-bottom: 0; }\n  .post-comments p:last-child {\n    margin-bottom: 0; }\n  .post-comments .avatar {\n    margin-top: 1px; }\n  .post-comments .author {\n    margin-top: 0;\n    margin-bottom: 2px;\n    color: #7ca9dd; }\n  .post-comments .comment-body {\n    overflow: auto; }\n  .post-comments h6.author > small {\n    font-size: 11px; }\n  .widget > footer .post-comments {\n    margin-left: -20px;\n    margin-right: -20px; }\n\n/***********************************/\n/**           Post User           **/\n/***********************************/\n.post-user {\n  position: relative; }\n  .post-user::after {\n    content: \"\";\n    display: table;\n    clear: both; }\n  .post-user img {\n    border: 3px solid white; }\n\n/***********************************/\n/**           Profile             **/\n/***********************************/\n.user-profile .label {\n  padding: 5px; }\n\n.post-user-profile {\n  margin-top: -75px; }\n  .post-user-profile .contacts {\n    display: block;\n    margin-top: 25px;\n    margin-left: -10px;\n    margin-right: -10px;\n    padding-left: 0;\n    text-align: center; }\n    .post-user-profile .contacts > li {\n      display: inline-block;\n      line-height: 2.2;\n      list-style: none;\n      text-align: left;\n      margin: 0 10px; }\n      @media (min-width: 992px) {\n        .post-user-profile .contacts > li {\n          width: 150px;\n          white-space: nowrap; } }\n      .post-user-profile .contacts > li > a {\n        color: #a2a2a2;\n        text-decoration: none; }\n        .post-user-profile .contacts > li > a:hover, .post-user-profile .contacts > li > a:focus {\n          color: #555555; }\n    .post-user-profile .contacts .fa {\n      font-size: 1.25rem;\n      vertical-align: middle; }\n\n.stats-row-profile .stat-item {\n  border-left: 0;\n  padding-left: 15px;\n  text-align: center; }\n  @media (min-width: 992px) {\n    .stats-row-profile .stat-item {\n      padding-right: 0; } }\n  .stats-row-profile .stat-item .value {\n    font-size: 28px;\n    font-weight: 300; }\n\n.activities h3 {\n  margin-left: 20px; }\n\n.activities .event {\n  margin-top: 1rem;\n  width: 100%; }\n\n.event {\n  background: #fff;\n  border-radius: 0.25rem;\n  padding: 20px 20px 0;\n  position: relative; }\n  .event .post-comments {\n    margin-left: -20px;\n    margin-right: -20px; }\n  .event > footer {\n    margin: 20px -20px 0;\n    padding: 10px 20px;\n    border-bottom-left-radius: 0.25rem;\n    border-bottom-right-radius: 0.25rem;\n    background-color: #f3f3f3; }\n    .event > footer::after {\n      content: \"\";\n      display: table;\n      clear: both; }\n    .event > footer .thumb {\n      margin-left: 10px; }\n\n.event-heading {\n  margin: 0 0 2px;\n  font-weight: 600; }\n  .event-heading > a {\n    text-decoration: none;\n    color: #7ca9dd; }\n  .event-heading > small {\n    font-weight: 600; }\n    .event-heading > small > a {\n      text-decoration: none;\n      color: #999999; }\n\n.event-map {\n  display: block;\n  height: 200px;\n  margin: 0 -20px -20px;\n  overflow: visible !important; }\n\n.event-image {\n  margin: 0 -20px -20px;\n  max-height: 260px;\n  overflow: hidden; }\n  .event-image > img {\n    max-width: 100%; }\n"
-
-/***/ },
-
-/***/ "./src/app/tasksByChallenges/challenges-tasks.template.html":
-/***/ function(module, exports) {
-
-module.exports = "<!--<ol class=\"breadcrumb\">\r\n  <li class=\"breadcrumb-item\">YOU ARE HERE</li>\r\n  <li class=\"active breadcrumb-item\">Challenges By Project</li>\r\n</ol> -->\r\n<h1 class=\"page-title\">Tasks</h1>\r\n\r\n<div class=\"row\">\r\n\r\n<div  *ngFor=\"let challenges of challengelist\" class=\"col-md-4\">\r\n\r\n\r\n<div class=\"grid\">\r\n\t\t\t\t\t<figure class=\"effect-ming\">\r\n\t\t\t\t\t\t<img src=\"assets/img/people/10.jpg\" alt=\"img19\"/>\r\n\t\t\t\t\t\t<figcaption>\r\n\t\t\t\t\t\t\t<h2>{{challenges.challengeShortName}}</h2>\r\n\t\t\t\t\t\t\t<p style=\"text-transform:lowercase\">{{challenges.targetPoints}}.</p>\r\n\t\t\t\t\t\t\t<a href=\"#\">View more</a>\r\n\t\t\t\t\t\t</figcaption>\t\t\t\r\n\t\t\t\t\t</figure>\r\n</div>\r\n\r\n\r\n</div>\r\n\r\n\r\n</div>"
-
 /***/ }
 
 });
-//# sourceMappingURL=25.map
+//# sourceMappingURL=27.map

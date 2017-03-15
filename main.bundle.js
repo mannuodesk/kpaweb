@@ -1,5 +1,5 @@
 var ac_main =
-webpackJsonpac__name_([6],{
+webpackJsonpac__name_([7],{
 
 /***/ "./node_modules/rxjs/add/observable/of.js":
 /***/ function(module, exports, __webpack_require__) {
@@ -401,15 +401,18 @@ var error_component_1 = __webpack_require__("./src/app/error/error.component.ts"
 exports.ROUTES = [{
         path: '', redirectTo: 'login', pathMatch: 'full'
     }, {
-        path: 'app', loadChildren: function () { return __webpack_require__.e/* System.import */(0).then(__webpack_require__.bind(null, "./src/app/layout/layout.module.ts")).then(function (mod) { return (mod.__esModule && mod.default) ? mod.default : mod; }); }
+        path: 'app', loadChildren: function () { return __webpack_require__.e/* System.import */(1).then(__webpack_require__.bind(null, "./src/app/layout/layout.module.ts")).then(function (mod) { return (mod.__esModule && mod.default) ? mod.default : mod; }); }
     }, {
-        path: 'login', loadChildren: function () { return __webpack_require__.e/* System.import */(4).then(__webpack_require__.bind(null, "./src/app/login/login.module.ts")).then(function (mod) { return (mod.__esModule && mod.default) ? mod.default : mod; }); }
+        path: 'login', loadChildren: function () { return __webpack_require__.e/* System.import */(5).then(__webpack_require__.bind(null, "./src/app/login/login.module.ts")).then(function (mod) { return (mod.__esModule && mod.default) ? mod.default : mod; }); }
     }, {
-        path: 'signup', loadChildren: function () { return __webpack_require__.e/* System.import */(1).then(__webpack_require__.bind(null, "./src/app/signup/signup.module.ts")).then(function (mod) { return (mod.__esModule && mod.default) ? mod.default : mod; }); }
+        path: 'signup', loadChildren: function () { return __webpack_require__.e/* System.import */(2).then(__webpack_require__.bind(null, "./src/app/signup/signup.module.ts")).then(function (mod) { return (mod.__esModule && mod.default) ? mod.default : mod; }); }
+    },
+    {
+        path: 'email-user', loadChildren: function () { return __webpack_require__.e/* System.import */(0/* duplicate */).then(__webpack_require__.bind(null, "./src/app/emailuser/email-user.module.ts")).then(function (mod) { return (mod.__esModule && mod.default) ? mod.default : mod; }); }
     }, {
-        path: 'agency-super-admin-signup', loadChildren: function () { return __webpack_require__.e/* System.import */(2).then(__webpack_require__.bind(null, "./src/app/agencysuperadmin/agency-super-admin-signup.module.ts")).then(function (mod) { return (mod.__esModule && mod.default) ? mod.default : mod; }); }
+        path: 'agency-super-admin-signup', loadChildren: function () { return __webpack_require__.e/* System.import */(3).then(__webpack_require__.bind(null, "./src/app/agencysuperadmin/agency-super-admin-signup.module.ts")).then(function (mod) { return (mod.__esModule && mod.default) ? mod.default : mod; }); }
     }, {
-        path: 'agency-advanced-admin-signup', loadChildren: function () { return __webpack_require__.e/* System.import */(3).then(__webpack_require__.bind(null, "./src/app/agencyadvancedadmin/agency-advanced-admin-signup.module.ts")).then(function (mod) { return (mod.__esModule && mod.default) ? mod.default : mod; }); }
+        path: 'agency-advanced-admin-signup', loadChildren: function () { return __webpack_require__.e/* System.import */(4).then(__webpack_require__.bind(null, "./src/app/agencyadvancedadmin/agency-advanced-admin-signup.module.ts")).then(function (mod) { return (mod.__esModule && mod.default) ? mod.default : mod; }); }
     }, {
         path: 'error', component: error_component_1.ErrorComponent
     }, {
@@ -590,6 +593,17 @@ var UsersService = (function () {
     }
     UsersService.prototype.getUsers = function () {
         return this.http.get(this.baseUrl + 'users/getListOfAdvancedAdmins')
+            .map(function (res) { return res.json(); });
+    };
+    UsersService.prototype.checkLinkValidity = function (email, password, token) {
+        return this.http.get(this.baseUrl + 'users/login?email=' + email + '&password=' + password + '&token=' + token)
+            .map(function (res) { return res.json(); });
+    };
+    UsersService.prototype.changePassword = function (email, password, token) {
+        var body = JSON.stringify({ "email": email, "password": password, "token": token });
+        var headers = new http_1.Headers({ 'Content-Type': 'application/json' });
+        var options = new http_1.RequestOptions({ method: 'post', headers: headers });
+        return this.http.post(this.baseUrl + "users/firstTimeChangePassword", body, options)
             .map(function (res) { return res.json(); });
     };
     UsersService.prototype.getUsersStats = function () {
