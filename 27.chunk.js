@@ -137,7 +137,7 @@ var ChallengeService = (function () {
         var headers = new http_1.Headers({ 'Content-Type': 'application/json', "Access-Control-Allow-Origin": "*" });
         var options = new http_1.RequestOptions({ method: 'post', headers: headers });
         console.log(body);
-        return this.http.post(this.serviceUrl.baseUrl + "users/addProjectCategory", body, options)
+        return this.http.post(this.serviceUrl.baseUrl + "projects/addProjectCategory", body, options)
             .map(function (res) { return res.json(); });
     };
     ChallengeService.prototype.getProjectCategories = function (agencyName, token) {
