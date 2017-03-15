@@ -46216,6 +46216,7 @@ var Projectdashboard = (function () {
         console.log(this.userObject, this.current_userId);
         this.challengeService.getProjectCategories(this.userObject.agencyName, sessionStorage.getItem('token'))
             .subscribe(function (a) {
+            console.log(a.data);
             _this.categories = a.data;
         });
         this.challengeService.getAdvanceAdmins(this.userObject.agencyName, sessionStorage.getItem('token'))
@@ -46252,12 +46253,14 @@ var Projectdashboard = (function () {
         this.advancedAdmin_id = value;
     };
     Projectdashboard.prototype.addProjectCategory = function () {
+        var _this = this;
         var project_category_title = this.projectCategoryTitle;
         var project_color_palette = jQuery("#colorpicker span>i").css("background-color");
         jQuery("#projectCategoryTitle").css("border", "2px solid black");
         if (this.projectCategoryTitle != "" && this.projectCategoryTitle.replace(/\s/g, '').length != 0) {
             this.challengeService.addProjectCategoryTitle(this.userObject.agencyName, this.projectCategoryTitle, project_color_palette, sessionStorage.getItem('token'))
                 .subscribe(function (project_category_title) {
+                _this.categories.push(project_category_title.data);
                 jQuery("#myModal .close").click();
             });
         }
