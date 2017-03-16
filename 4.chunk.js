@@ -13,6 +13,7 @@ var AgencyAdvancedAdminSignup = (function () {
     function AgencyAdvancedAdminSignup(signupService, http) {
         this.signupService = signupService;
         this.http = http;
+        this.userObject = JSON.parse(sessionStorage.getItem('userObject'));
         jQuery(document).ready(function ($) {
             $('.signUp').attr('disabled', true);
             $('#AgencyAdvancedAdmin .field').keyup(function () {
@@ -47,7 +48,7 @@ var AgencyAdvancedAdminSignup = (function () {
             jQuery(".field").val("");
         }
         console.log(this.AgencyAdvancedAdminName, this.AgencyAdvancedAdminUsername, this.userToBeCreatedRole, this.createdByUserId);
-        this.signupService.addUser(this.AgencyAdvancedAdminName, this.AgencyAdvancedAdminUsername, this.userToBeCreatedRole, this.createdByUserId, sessionStorage.getItem('token')).subscribe(function (a) {
+        this.signupService.addUser(this.AgencyAdvancedAdminName, this.AgencyAdvancedAdminUsername, this.userToBeCreatedRole, this.createdByUserId, this.userObject.agencyName, sessionStorage.getItem('token')).subscribe(function (a) {
             if (a.code == 200) {
                 jQuery("#successBox").text("Invitation Sent Successfully");
                 $(".field").val('');
@@ -154,22 +155,6 @@ module.exports = "<div class=\"container\">\r\n  <main id=\"content\" class=\"wi
 
 /***/ },
 
-/***/ "./src/app/services/ServiceUrl.ts":
-/***/ function(module, exports) {
-
-"use strict";
-"use strict";
-var ServiceUrl = (function () {
-    function ServiceUrl() {
-        this.baseUrl = "https://kpa.herokuapp.com/";
-    }
-    return ServiceUrl;
-}());
-exports.ServiceUrl = ServiceUrl;
-
-
-/***/ },
-
 /***/ "./src/app/services/SignUpService.ts":
 /***/ function(module, exports, __webpack_require__) {
 
@@ -185,8 +170,8 @@ var SignupService = (function () {
         this.serviceUrl = new ServiceUrl_1.ServiceUrl();
         console.log("Sign Up initialized");
     }
-    SignupService.prototype.addUser = function (name, email, userToBeCreatedRole, createdByUserId, token) {
-        var body = JSON.stringify({ "userDisplayName": name, "email": email, "userToBeCreatedRole": userToBeCreatedRole, "createdByUserId": createdByUserId, "token": token });
+    SignupService.prototype.addUser = function (name, email, userToBeCreatedRole, createdByUserId, agencyName, token) {
+        var body = JSON.stringify({ "userDisplayName": name, "email": email, "userToBeCreatedRole": userToBeCreatedRole, "createdByUserId": createdByUserId, "agencyName": agencyName, "token": token });
         var headers = new http_1.Headers({ 'Content-Type': 'application/json', "Access-Control-Allow-Origin": "*" });
         var options = new http_1.RequestOptions({ method: 'post', headers: headers });
         console.log(body);

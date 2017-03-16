@@ -577,6 +577,22 @@ module.exports = "@charset \"UTF-8\";\n/*!\n * Bootstrap v4.0.0-alpha.4 (http://
 
 /***/ },
 
+/***/ "./src/app/services/ServiceUrl.ts":
+/***/ function(module, exports) {
+
+"use strict";
+"use strict";
+var ServiceUrl = (function () {
+    function ServiceUrl() {
+        this.baseUrl = "http://52.33.90.219:3000/";
+    }
+    return ServiceUrl;
+}());
+exports.ServiceUrl = ServiceUrl;
+
+
+/***/ },
+
 /***/ "./src/app/services/UsersService.ts":
 /***/ function(module, exports, __webpack_require__) {
 
@@ -585,62 +601,52 @@ module.exports = "@charset \"UTF-8\";\n/*!\n * Bootstrap v4.0.0-alpha.4 (http://
 var core_1 = __webpack_require__("./node_modules/@angular/core/index.js");
 var http_1 = __webpack_require__("./node_modules/@angular/http/index.js");
 __webpack_require__("./node_modules/rxjs/add/operator/map.js");
+var ServiceUrl_1 = __webpack_require__("./src/app/services/ServiceUrl.ts");
 var UsersService = (function () {
-    //baseUrl:string = "http://localhost/";
     function UsersService(http) {
         this.http = http;
-        this.baseUrl = "https://kpa.herokuapp.com/";
+        this.serviceUrl = new ServiceUrl_1.ServiceUrl();
     }
-    UsersService.prototype.getUsers = function () {
-        return this.http.get(this.baseUrl + 'users/getListOfAdvancedAdmins')
+    UsersService.prototype.getUsers = function (token) {
+        var headers = new http_1.Headers({ 'x-access-token': token });
+        return this.http.get(this.serviceUrl.baseUrl + 'users/getListOfAdvancedAdmins', {
+            headers: headers
+        })
             .map(function (res) { return res.json(); });
     };
     UsersService.prototype.checkLinkValidity = function (email, password, token) {
-        return this.http.get(this.baseUrl + 'users/login?email=' + email + '&password=' + password + '&token=' + token)
+        var headers = new http_1.Headers({ 'x-access-token': token });
+        return this.http.get(this.serviceUrl.baseUrl + 'users/login?email=' + email + '&password=' + password, {
+            headers: headers
+        })
             .map(function (res) { return res.json(); });
     };
     UsersService.prototype.changePassword = function (email, password, token) {
         var body = JSON.stringify({ "email": email, "password": password, "token": token });
         var headers = new http_1.Headers({ 'Content-Type': 'application/json' });
         var options = new http_1.RequestOptions({ method: 'post', headers: headers });
-        return this.http.post(this.baseUrl + "users/firstTimeChangePassword", body, options)
-            .map(function (res) { return res.json(); });
-    };
-    UsersService.prototype.getUsersStats = function () {
-        return this.http.get(this.baseUrl + 'users/dashboardStats')
-            .map(function (res) { return res.json(); });
-    };
-    UsersService.prototype.getGenderGraphData = function () {
-        return this.http.get(this.baseUrl + 'users/dashboardGenderStats')
+        return this.http.post(this.serviceUrl.baseUrl + "users/firstTimeChangePassword", body, options)
             .map(function (res) { return res.json(); });
     };
     UsersService.prototype.authenticateToken = function () {
         var body = JSON.stringify({});
         var headers = new http_1.Headers({ 'Content-Type': 'application/json' });
         var options = new http_1.RequestOptions({ method: 'post', headers: headers });
-        return this.http.post(this.baseUrl + "authenticate", body, options)
+        return this.http.post(this.serviceUrl.baseUrl + "authenticate", body, options)
             .map(function (res) { return res.json(); });
     };
     UsersService.prototype.authenticateAdminUser = function (email, password, token) {
         var body = JSON.stringify({ "email": email, "password": password, "token": token });
         var headers = new http_1.Headers({ 'Content-Type': 'application/json' });
         var options = new http_1.RequestOptions({ method: 'post', headers: headers });
-        return this.http.post(this.baseUrl + "users/userLogin", body, options)
-            .map(function (res) { return res.json(); });
-    };
-    UsersService.prototype.getAdminData = function (Id) {
-        var body = JSON.stringify({ "userId": Id });
-        var headers = new http_1.Headers({ 'Content-Type': 'application/json' });
-        var options = new http_1.RequestOptions({ method: 'post', headers: headers });
-        return this.http.post(this.baseUrl + "users/getAdminUser", body, options)
-            .map(function (res) { return res.json(); });
-    };
-    UsersService.prototype.deleteUsers = function (Id) {
-        return this.http.get(this.baseUrl + 'users/deleteUser/' + Id)
+        return this.http.post(this.serviceUrl.baseUrl + "users/userLogin", body, options)
             .map(function (res) { return res.json(); });
     };
     UsersService.prototype.getSidebarComponentsByRole = function (Id, token) {
-        return this.http.get(this.baseUrl + 'users/getPageControlsByRoles?userRole=' + Id + '&token=' + token)
+        var headers = new http_1.Headers({ 'x-access-token': token });
+        return this.http.get(this.serviceUrl.baseUrl + 'users/getPageControlsByRoles?userRole=' + Id, {
+            headers: headers
+        })
             .map(function (res) { return res.json(); });
     };
     UsersService = __decorate([
